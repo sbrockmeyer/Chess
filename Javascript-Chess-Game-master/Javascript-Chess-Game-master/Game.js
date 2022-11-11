@@ -1,9 +1,9 @@
 class Game {
 	constructor(pieces) {
-		this.board   = document.getElementById('board');
+		this.board = document.getElementById('board');
 		this.squares = this.board.querySelectorAll('.square');
-		this.pieces  = pieces;
-		this.turn    = 'white';
+		this.pieces = pieces;
+		this.turn = 'white';
 		this.turnSign = document.getElementById('turn');
 		this.clickedPiece = null;
 		this.allowedMoves = null;
@@ -13,17 +13,17 @@ class Game {
 	}
 
 	addEventListeners() {
-		this.pieces.forEach( piece => {
-			piece.img.addEventListener("click", this.pieceMove.bind(this)); 
-			piece.img.addEventListener("dragstart", this.pieceMove.bind(this)); 
+		this.pieces.forEach(piece => {
+			piece.img.addEventListener("click", this.pieceMove.bind(this));
+			piece.img.addEventListener("dragstart", this.pieceMove.bind(this));
 			piece.img.addEventListener("drop", this.pieceMove.bind(this));
 		});
-		this.squares.forEach( square => {
-			square.addEventListener("click", this.movePiece.bind(this)); 
-			square.addEventListener("dragover", function(event){
+		this.squares.forEach(square => {
+			square.addEventListener("click", this.movePiece.bind(this));
+			square.addEventListener("dragover", function (event) {
 				event.preventDefault();
-			}); 
-			square.addEventListener("drop", this.movePiece.bind(this)); 
+			});
+			square.addEventListener("drop", this.movePiece.bind(this));
 		});
 	}
 
@@ -40,13 +40,13 @@ class Game {
 			}*/
 			clickedSquare.classList.add('clicked-square');
 
-			allowedMoves.forEach( allowedMove => {
+			allowedMoves.forEach(allowedMove => {
 				if (document.body.contains(document.getElementById(allowedMove))) {
-					document.getElementById(allowedMove).classList.add('allowed');		
-				}	
+					document.getElementById(allowedMove).classList.add('allowed');
+				}
 			});
 		}
-		else{
+		else {
 			this.clearSquares();
 		}
 	}
@@ -56,7 +56,7 @@ class Game {
 			this.turn = 'black';
 			this.turnSign.innerHTML = "Black's Turn";
 		}
-		else{
+		else {
 			this.turn = 'white';
 			this.turnSign.innerHTML = "White's Turn";
 		}
@@ -64,13 +64,13 @@ class Game {
 
 	getPiecesByColor(color) {
 		return this.pieces.filter(obj => {
-		  return obj.color === color
+			return obj.color === color
 		});
 	}
 
-	getPlayerPositions(color){
+	getPlayerPositions(color) {
 		const pieces = this.getPiecesByColor(color);
-		return pieces.map( a => parseInt(a.position));
+		return pieces.map(a => parseInt(a.position));
 	}
 
 	filterPositions(positions) {
@@ -79,19 +79,19 @@ class Game {
 		});
 	};
 
-	unblockedPositions(allowedPositions=[], position, color, checking=true){
+	unblockedPositions(allowedPositions = [], position, color, checking = true) {
 		position = parseInt(position);
 		const unblockedPositions = [];
 
 		if (color == 'white') {
-			var myBlockedPositions    = this.getPlayerPositions('white');
+			var myBlockedPositions = this.getPlayerPositions('white');
 			var otherBlockedPositions = this.getPlayerPositions('black');
 		}
-		else{
-			var myBlockedPositions    = this.getPlayerPositions('black');
+		else {
+			var myBlockedPositions = this.getPlayerPositions('black');
 			var otherBlockedPositions = this.getPlayerPositions('white');
 		}
-		
+
 		if (this.clickedPiece.hasRank('pawn')) {
 			for (const move of allowedPositions[0]) { //attacking moves
 				if (checking && this.myKingChecked(move)) continue;
@@ -104,13 +104,13 @@ class Game {
 				unblockedPositions.push(move);
 			}
 		}
-		else{
-			allowedPositions.forEach( allowedPositionsGroup => {
+		else {
+			allowedPositions.forEach(allowedPositionsGroup => {
 				for (const move of allowedPositionsGroup) {
 					if (myBlockedPositions.indexOf(move) != -1) {
 						break;
 					}
-					else if ( checking && this.myKingChecked(move) ) {
+					else if (checking && this.myKingChecked(move)) {
 						continue;
 					}
 					unblockedPositions.push(move);
@@ -118,13 +118,13 @@ class Game {
 				}
 			});
 		}
-			
+
 		return this.filterPositions(unblockedPositions);
 	}
 
-	getPieceAllowedMoves(event, pieceName){
+	getPieceAllowedMoves(event, pieceName) {
 		const piece = this.getPieceByName(pieceName);
-		if(this.turn == piece.color){
+		if (this.turn == piece.color) {
 			this.clearSquares();
 			this.setClickedPiece(piece);
 			if (event.type == 'dragstart') {
@@ -136,48 +136,48 @@ class Game {
 				pieceAllowedMoves = this.getCastlingSquares(pieceAllowedMoves);
 			}
 
-			const allowedMoves = this.unblockedPositions( pieceAllowedMoves, piece.position, piece.color, true );
+			const allowedMoves = this.unblockedPositions(pieceAllowedMoves, piece.position, piece.color, true);
 			this.allowedMoves = allowedMoves;
 			return allowedMoves;
 		}
 		else if (this.clickedPiece && this.turn == this.clickedPiece.color && this.allowedMoves && this.allowedMoves.indexOf(piece.position) != -1) {
 			this.kill(piece);
 		}
-		else{
+		else {
 			return 0;
 		}
 	}
 
 	getCastlingSquares(allowedMoves) {
-		if ( !this.clickedPiece.ableToCastle || this.king_checked(this.turn) ) return allowedMoves;
-		const rook1 = this.getPieceByName(this.turn+'Rook1');
-		const rook2 = this.getPieceByName(this.turn+'Rook2');
+		if (!this.clickedPiece.ableToCastle || this.king_checked(this.turn)) return allowedMoves;
+		const rook1 = this.getPieceByName(this.turn + 'Rook1');
+		const rook2 = this.getPieceByName(this.turn + 'Rook2');
 		if (rook1 && rook1.ableToCastle) {
 			const castlingPosition = rook1.position + 2
-            if(
-                !this.positionHasExistingPiece(castlingPosition - 1) &&
-                !this.positionHasExistingPiece(castlingPosition) && !this.myKingChecked(castlingPosition, true) &&
-                !this.positionHasExistingPiece(castlingPosition + 1) && !this.myKingChecked(castlingPosition + 1, true)
-            )
-			allowedMoves[1].push(castlingPosition);
+			if (
+				!this.positionHasExistingPiece(castlingPosition - 1) &&
+				!this.positionHasExistingPiece(castlingPosition) && !this.myKingChecked(castlingPosition, true) &&
+				!this.positionHasExistingPiece(castlingPosition + 1) && !this.myKingChecked(castlingPosition + 1, true)
+			)
+				allowedMoves[1].push(castlingPosition);
 		}
 		if (rook2 && rook2.ableToCastle) {
 			const castlingPosition = rook2.position - 1;
-			if(
-                !this.positionHasExistingPiece(castlingPosition - 1) && !this.myKingChecked(castlingPosition - 1, true) &&
-                !this.positionHasExistingPiece(castlingPosition) && !this.myKingChecked(castlingPosition, true)
-            )
-			allowedMoves[0].push(castlingPosition);
+			if (
+				!this.positionHasExistingPiece(castlingPosition - 1) && !this.myKingChecked(castlingPosition - 1, true) &&
+				!this.positionHasExistingPiece(castlingPosition) && !this.myKingChecked(castlingPosition, true)
+			)
+				allowedMoves[0].push(castlingPosition);
 		}
 		return allowedMoves;
 	}
 
 	getPieceByName(piecename) {
-		return this.pieces.filter( obj => obj.name === piecename )[0];
+		return this.pieces.filter(obj => obj.name === piecename)[0];
 	}
 
 	getPieceByPos(piecePosition) {
-		return this.pieces.filter(obj =>  obj.position === piecePosition )[0];
+		return this.pieces.filter(obj => obj.position === piecePosition)[0];
 	}
 
 	positionHasExistingPiece(position) {
@@ -188,7 +188,7 @@ class Game {
 		this.clickedPiece = piece;
 	}
 
-	movePiece(event, square='') {
+	movePiece(event, square = '') {
 		square = square || event.target;
 		if (square.classList.contains('allowed')) {
 			const clickedPiece = this.clickedPiece;
@@ -205,12 +205,12 @@ class Game {
 					if (this.king_dead(this.turn)) {
 						this.checkmate(clickedPiece.color);
 					}
-					else{
+					else {
 						// alert('check');
 					}
 				}
 			}
-			else{
+			else {
 				return 0;
 			}
 		}
@@ -221,8 +221,8 @@ class Game {
 		piece.img.parentNode.removeChild(piece.img);
 		piece.img.className = '';
 
-		if (piece.color == 'white') this.whiteSematary.querySelector('.'+piece.rank).append(piece.img);
-		else this.blackSematary.querySelector('.'+piece.rank).append(piece.img);
+		if (piece.color == 'white') this.whiteSematary.querySelector('.' + piece.rank).append(piece.img);
+		else this.blackSematary.querySelector('.' + piece.rank).append(piece.img);
 
 		const chosenSquare = document.getElementById(piece.position);
 		this.pieces.splice(this.pieces.indexOf(piece), 1);
@@ -237,7 +237,7 @@ class Game {
 		const chosenSquare = document.getElementById(newPosition);
 		chosenSquare.classList.add('allowed');
 
-		this.movePiece('', chosenSquare );
+		this.movePiece('', chosenSquare);
 		this.changeTurn();
 	}
 
@@ -247,10 +247,10 @@ class Game {
 		image.id = queenName;
 		image.src = image.src.replace('Pawn', 'Queen');
 		this.pieces.splice(this.pieces.indexOf(pawn), 1);
-		this.pieces.push( new Queen(pawn.position, queenName) );
+		this.pieces.push(new Queen(pawn.position, queenName));
 	}
 
-	myKingChecked(pos, kill=true){
+	myKingChecked(pos, kill = true) {
 		const piece = this.clickedPiece;
 		const originalPosition = piece.position;
 		const otherPiece = this.getPieceByPos(pos);
@@ -262,7 +262,7 @@ class Game {
 			if (should_kill_other_piece) this.pieces.push(otherPiece);
 			return 1;
 		}
-		else{
+		else {
 			piece.changePosition(originalPosition);
 			if (should_kill_other_piece) this.pieces.push(otherPiece);
 			return 0;
@@ -273,7 +273,7 @@ class Game {
 		const pieces = this.getPiecesByColor(color);
 		for (const piece of pieces) {
 			this.setClickedPiece(piece);
-			const allowedMoves = this.unblockedPositions( piece.getAllowedMoves(), piece.position, piece.color, true );
+			const allowedMoves = this.unblockedPositions(piece.getAllowedMoves(), piece.position, piece.color, true);
 			if (allowedMoves.length) {
 				this.setClickedPiece(null);
 				return 0;
@@ -290,7 +290,7 @@ class Game {
 		const enemyPieces = this.getPiecesByColor(enemyColor);
 		for (const enemyPiece of enemyPieces) {
 			this.setClickedPiece(enemyPiece);
-			const allowedMoves = this.unblockedPositions( enemyPiece.getAllowedMoves(), enemyPiece.position, enemyColor, false );
+			const allowedMoves = this.unblockedPositions(enemyPiece.getAllowedMoves(), enemyPiece.position, enemyColor, false);
 			if (allowedMoves.indexOf(king.position) != -1) {
 				this.setClickedPiece(piece);
 				return 1;
@@ -300,15 +300,15 @@ class Game {
 		return 0;
 	}
 
-	clearSquares(){
+	clearSquares() {
 		this.allowedMoves = null;
 		const allowedSquares = this.board.querySelectorAll('.allowed');
-		allowedSquares.forEach( allowedSquare => allowedSquare.classList.remove('allowed') );
+		allowedSquares.forEach(allowedSquare => allowedSquare.classList.remove('allowed'));
 		const cllickedSquare = document.getElementsByClassName('clicked-square')[0];
 		if (cllickedSquare) cllickedSquare.classList.remove('clicked-square');
 	}
 
-	checkmate(color){
+	checkmate(color) {
 		const endScene = document.getElementById('endscene');
 		endScene.getElementsByClassName('winning-sign')[0].innerHTML = color + ' Wins';
 		endScene.classList.add('show');

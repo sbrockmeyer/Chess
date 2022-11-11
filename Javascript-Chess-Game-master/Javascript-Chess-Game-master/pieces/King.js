@@ -24,10 +24,10 @@ class King extends Piece {
 		this.ableToCastle = false;
 	}
 
-	changePosition(position, castle=false) {
+	changePosition(position, castle = false) {
 		if (castle) {
-			if (position - this.position == 2) game.castleRook(this.color+'Rook2');
-			if (position - this.position == -2) game.castleRook(this.color+'Rook1');
+			if (position - this.position == 2) game.castleRook(this.color + 'Rook2');
+			if (position - this.position == -2) game.castleRook(this.color + 'Rook1');
 			this.ableToCastle = false;
 		}
 		this.position = parseInt(position);

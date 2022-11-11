@@ -10,6 +10,6 @@ class Rook extends Piece {
 	}
 
 	getAllowedMoves() {
-		return [ this.getMovesTop(), this.getMovesBottom(), this.getMovesRight(), this.getMovesLeft() ];
+		return [this.getMovesTop(), this.getMovesBottom(), this.getMovesRight(), this.getMovesLeft()];
 	}
 }

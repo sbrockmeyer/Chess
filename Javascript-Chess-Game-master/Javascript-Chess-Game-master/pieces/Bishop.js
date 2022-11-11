@@ -4,7 +4,7 @@ class Bishop extends Piece {
 	}
 
 	getAllowedMoves() {
-		return [ this.getMovesTopRight(), this.getMovesTopLeft(), this.getMovesBottomRight(), this.getMovesBottomLeft() ];
+		return [this.getMovesTopRight(), this.getMovesTopLeft(), this.getMovesBottomRight(), this.getMovesBottomLeft()];
 	}
 }
 

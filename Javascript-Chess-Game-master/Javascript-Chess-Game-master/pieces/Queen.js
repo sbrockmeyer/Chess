@@ -3,7 +3,7 @@ class Queen extends Piece {
 		super(position, 'queen', name);
 	}
 
-	getAllowedMoves(){
+	getAllowedMoves() {
 		return [
 			this.getMovesTop(),
 			this.getMovesTopRight(),
