@@ -315,6 +315,8 @@ class Game {
 	}
 }
 
+
+
 const pieces = [
 	new Rook(11, 'whiteRook1'),
 	new Knight(12, 'whiteKnight1'),
