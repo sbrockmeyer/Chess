@@ -206,7 +206,7 @@ class Game {
 						this.checkmate(clickedPiece.color);
 					}
 					else {
-						// alert('check');
+						alert('check');
 					}
 				}
 			}
